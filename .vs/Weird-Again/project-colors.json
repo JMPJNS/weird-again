@@ -1,0 +1,21 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "8a3d5366-7629-444b-aa62-455edaac1196": {
+      "ProjectGuid": "8a3d5366-7629-444b-aa62-455edaac1196",
+      "DisplayName": "Weird-Again",
+      "ColorIndex": 0
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Miscellaneous Files",
+      "ColorIndex": -1
+    },
+    "720b3339-5ccf-402e-9d94-ac0b191f4712": {
+      "ProjectGuid": "720b3339-5ccf-402e-9d94-ac0b191f4712",
+      "DisplayName": "Documentation",
+      "ColorIndex": 1
+    }
+  },
+  "NextColorIndex": 2
+}

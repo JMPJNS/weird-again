@@ -1,0 +1,118 @@
+﻿@page "/projects"
+@inject ProjectService ps
+
+<style>
+    article {
+        overflow: hidden;
+    }
+
+    .hover-zoom {
+        transition: all 0.2s ease-in-out;
+        object-fit: cover;
+    }
+
+    .hover-zoom:hover {
+        transform: scale(2.1);
+        object-fit: scale-down;
+        z-index: 100;
+    }
+</style>
+
+<h1>Project List</h1>
+@if (!Loaded)
+{
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only"></span>
+    </div>
+}
+<div class="container">
+    @if(Projects.Count == 0)
+    {
+        <div>
+            No Projects
+        </div>
+    }
+    <div class="row">
+        @foreach (var pr in Projects)
+        {
+        <div class="col-md-6 col-lg-6 col-sm-12 align-items-stretch">
+            <div class="card py-1 px-1 h-100">
+                <img class="card-img-top hover-zoom align-content-center" style="max-height: 20vh;" src="@pr.ImageUrl"/>
+                <div class="row card-title pt-1" @onclick="() => { ShowId = ShowId == pr.Id ? 0 : pr.Id; ShowAddNew = false; }">
+                    <div class="col">
+                        Id: @pr.Id
+                    </div>
+                    <div class="col">
+                        Name: @pr.Name
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-sm btn-primary" @onclick:stopPropagation @onclick="() => { ShowId = ShowId == pr.Id ? 0 : pr.Id; ShowAddNew = false; }">Details</button>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-sm btn-danger" @onclick:stopPropagation @onclick="async () => { await Delete(pr); }">Delete</button>
+                    </div>
+                </div>
+                <div class="card-body collapse @(ShowId == pr.Id ? "show" : "")">
+                    <div class="row">
+                        <div class="col"> <Edit Project="@pr" OnValidSubmit="async () => { await Update(pr); }" /> </div>
+                        <div class="col"> <img style="max-height: 25vh;" src="@pr.ImageUrl"/> </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+    <div class="card py-1 px-1">
+            <div class="row card-img-top">
+                <div class="col">
+                    <button class="btn btn-sm btn-success" @onclick="() => { ShowAddNew = !ShowAddNew; ShowId = 0; }">Add New</button>
+                </div>
+            </div>
+            <div class="w-50 card-body collapse @(ShowAddNew == true ? "show" : "")">
+                <Edit Project="@newProject" OnValidSubmit="@SaveNew" />
+            </div>
+    </div>
+</div>
+
+@code {
+    List<Project> Projects = new();
+    bool Loaded = false;
+    bool ShowAddNew = false;
+    protected override async Task OnInitializedAsync()
+    {
+        Projects = await ps.GetAll();
+        Loaded = true;
+        await base.OnInitializedAsync();
+    }
+
+    public int ShowId = 0;
+
+    public Project newProject = new();
+
+    public async Task SaveNew()
+    {
+        Loaded = false;
+        ShowAddNew = false;
+        await ps.Add(newProject);
+        newProject = new();
+
+        Projects = await ps.GetAll();
+        Loaded = true;
+    }
+
+    public async Task Update(Project pr)
+    {
+        Loaded = false;
+        await ps.Update(pr);
+        ShowId = 0;
+        Loaded = true;
+    }
+
+    public async Task Delete(Project pr)
+    {
+        Loaded = false;
+        Projects.Remove(pr);
+        await ps.Delete(pr);
+        Loaded = true;
+    }
+}

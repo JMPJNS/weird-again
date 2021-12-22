@@ -1,0 +1,38 @@
+﻿@page "/roles"
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Identity;
+@using Weird_Again.Data.Models;
+@inject UserManager<User> _UserManager
+@inject RoleManager<IdentityRole> _RoleManager
+
+<h3>RoleManager</h3>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var RoleResult = await _RoleManager.FindByNameAsync("admin");
+        if (RoleResult == null)
+        {
+            // Create admin Role
+            await _RoleManager.CreateAsync(new IdentityRole("admin"));
+        }
+
+        var user = await _UserManager.FindByNameAsync("ausland@ausland.ausland");
+        Console.WriteLine(user);
+        if (user != null)
+        {
+            // Is user in administrator role?
+            var UserResult = await _UserManager.IsInRoleAsync(user, "admin");
+            if (!UserResult)
+            {
+                // Put user in Administrator role
+                Console.WriteLine("giving admin Role");
+                await _UserManager.AddToRoleAsync(user, "admin");
+            } else
+            {
+                Console.WriteLine("already admin");
+            }
+        }
+    }
+
+}
